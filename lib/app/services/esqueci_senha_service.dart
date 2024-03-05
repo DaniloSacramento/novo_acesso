@@ -4,7 +4,9 @@ import 'package:acessonovo/app/const/const.dart';
 import 'package:http/http.dart' as http;
 
 class EsqueciSenhaDataSorce {
-  Future<bool> esqueciSenhaService({required String email}) async {
+  Future<bool> esqueciSenhaService({
+    required String email,
+  }) async {
     var url = Uri.parse(ConstsApi.esqueciSenha);
     var response = await http.post(
       url,

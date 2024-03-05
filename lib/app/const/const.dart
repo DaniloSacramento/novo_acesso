@@ -1,6 +1,5 @@
 class ConstsApi {
-  //static const String baseUrl = 'http://acesso.novoatacarejo.com';
-  static const String baseUrl = 'http://192.168.15.51:8090';
+  static const String baseUrl = 'http://acesso.novoatacarejo.com';
   static const String promotorAuth = '$baseUrl/api/auth/promotor';
   static const String basicAuth = 'Basic bGVvbmFyZG86MTIzNDU2';
   static const String codigoAuth = '$baseUrl/api/auth/empresa/codigo';
