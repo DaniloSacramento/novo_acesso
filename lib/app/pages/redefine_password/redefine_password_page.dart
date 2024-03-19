@@ -19,7 +19,9 @@ class _RedefinePasswordState extends State<RedefinePassword> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isButtonEnabled = true;
-
+  bool apiSuccess = false;
+  Map<String, dynamic>? apiResponse;
+  String? errorMessage;
   Future<void> _checkInternetConnection() async {
     var connectivityResult = await Connectivity().checkConnectivity();
 
@@ -110,33 +112,30 @@ class _RedefinePasswordState extends State<RedefinePassword> {
                       SizedBox(
                         height: telaHeight * 0.020,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 0),
-                        child: TextFormField(
-                          controller: _emailController,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Por favor, insira um endereço de e-mail.';
-                            }
-                            if (!RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").hasMatch(value)) {
-                              return 'Por favor, insira um endereço de e-mail válido.';
-                            }
-                            return null;
-                          },
-                          cursorColor: Colors.grey,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: InputDecoration(
-                            hintText: "E-mail",
-                            hintStyle: GoogleFonts.dosis(),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                12.0,
-                              ),
-                              borderSide: BorderSide.none,
+                      TextFormField(
+                        controller: _emailController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Por favor, insira um endereço de e-mail.';
+                          }
+                          if (!RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").hasMatch(value)) {
+                            return 'Por favor, insira um endereço de e-mail válido.';
+                          }
+                          return null;
+                        },
+                        cursorColor: Colors.grey,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: "E-mail",
+                          hintStyle: GoogleFonts.dosis(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              12.0,
                             ),
-                            filled: true,
-                            fillColor: Colors.grey[300],
+                            borderSide: BorderSide.none,
                           ),
+                          filled: true,
+                          fillColor: Colors.grey[300],
                         ),
                       ),
                       SizedBox(
@@ -157,14 +156,18 @@ class _RedefinePasswordState extends State<RedefinePassword> {
                                       setState(() {
                                         _isButtonEnabled = false;
                                       });
-                                      bool apiSuccess = await EsqueciSenhaDataSorce().esqueciSenhaService(email: _emailController.text);
+                                      apiResponse = await EsqueciSenhaDataSorce().esqueciSenhaService(email: _emailController.text);
 
-                                      if (apiSuccess) {
+                                      if (apiResponse!['data'] == 'ok') {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
                                             builder: (context) => EsqueciSenhaSucesso(),
                                           ),
                                         );
+                                      } else {
+                                        setState(() {
+                                          errorMessage = apiResponse!['errors'][0];
+                                        });
                                       }
 
                                       setState(() {
@@ -187,6 +190,18 @@ class _RedefinePasswordState extends State<RedefinePassword> {
                           ),
                         ),
                       ),
+                      errorMessage != null
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                errorMessage!,
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 ),

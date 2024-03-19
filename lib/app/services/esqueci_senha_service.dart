@@ -4,7 +4,7 @@ import 'package:acessonovo/app/const/const.dart';
 import 'package:http/http.dart' as http;
 
 class EsqueciSenhaDataSorce {
-  Future<bool> esqueciSenhaService({
+  Future<Map<String, dynamic>> esqueciSenhaService({
     required String email,
   }) async {
     var url = Uri.parse(ConstsApi.esqueciSenha);
@@ -21,18 +21,9 @@ class EsqueciSenhaDataSorce {
       ),
     );
     if (response.statusCode == 200) {
-      print(response.body);
-      final responseData = json.decode(response.body);
-
-      if (responseData['data'] == 'ok') {
-        print('Sucesso');
-        return true;
-      } else {
-        final errors = responseData['errors'];
-        print('Erro: $errors');
-        return false;
-      }
+      return json.decode(utf8.decode(response.bodyBytes));
+    } else {
+      throw Exception('Erro ao verificar o token');
     }
-    return false;
   }
 }
